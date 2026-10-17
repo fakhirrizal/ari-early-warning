@@ -2,8 +2,8 @@
   <h1>ARI - Accounts Receivable Intelligence</h1>
   <p><strong>AI-Powered Early Warning System for B2B Receivables</strong></p>
   
-  [![AI Builder Cup](https://img.shields.io/badge/AI%20Builder%20Cup-2026-blue?style=for-the-badge&logo=google-cloud)](https://aibuildercup.withgoogle.com/)
-  [![Google Gemini](https://img.shields.io/badge/Powered%20by-Gemini%202.0%20Flash-orange?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
+  [![AI Builder Cup](https://img.shields.io/badge/AI%20Builder%20Cup-2026-blue?style=for-the-badge&logo=google-cloud)](https://aibuildercup.com/)
+  [![Google Gemini](https://img.shields.io/badge/Powered%20by-Gemini%203.8%20Flash-orange?style=for-the-badge&logo=google)](https://deepmind.google/models/gemini/flash/)
   [![Firebase](https://img.shields.io/badge/Hosted%20on-Firebase-yellow?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
   [![Cloudflare](https://img.shields.io/badge/Proxy-Cloudflare%20Workers-F38020?style=for-the-badge&logo=cloudflare)](https://workers.cloudflare.com/)
   
@@ -47,7 +47,7 @@ B2B companies (especially in truck rental, leasing, and logistics) often face a 
 |------------|------|-----------------|
 | **Vanilla JS & HTML** | Frontend UI | Ultra-lightweight, zero build steps, ensures fast loading times and easy deployment without complex bundlers. |
 | **SQLite (`sql.js`) + LocalStorage** | Database | Runs entirely in the browser via WebAssembly. Perfect for a serverless prototype, providing full SQL capabilities and data persistence across refreshes without needing a backend database. |
-| **Google Gemini 2.0 Flash** | AI Engine | Extremely fast, cost-efficient, and capable of parsing unstructured web data into structured JSON risk evidence. |
+| **Google Gemini 3.8 Flash** | AI Engine | Extremely fast, cost-efficient, and capable of parsing unstructured web data into structured JSON risk evidence. |
 | **Cloudflare Workers** | API Proxy & Scraper | Secures the Gemini API key (never exposed to the client). Acts as a serverless backend to fetch external data and handle CORS. |
 | **Firebase Hosting** | Deployment | Global CDN, SSL out of the box, and integrates seamlessly with the Google Cloud ecosystem. |
 | **ApexCharts** | Data Visualization | Provides smooth, interactive, and responsive SVG charts that look modern and professional. |
@@ -64,7 +64,7 @@ graph TD
     
     C -->|Secures API Key| C
     C -->|Fetch External Data| E[Public News / Legal SIPP / IDX]
-    C -->|Prompt + Context| D[Google Gemini 2.0 API]
+    C -->|Prompt + Context| D[Google Gemini 3.8 API]
     
     D -->|Structured JSON Analysis| C
     C -->|Returns Evidence| A

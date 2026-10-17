@@ -23,7 +23,7 @@ const Gemini = {
     try {
       ARIDB.exec(
         `INSERT INTO ai_log(time,operation,model,customer,status,details,duration_ms) VALUES(?,?,?,?,?,?,?)`,
-        [new Date().toISOString(), operation, model || 'gemini-2.0-flash', customer || '-', status, details || '', durationMs || 0]
+        [new Date().toISOString(), operation, model || 'gemini-3.8-flash', customer || '-', status, details || '', durationMs || 0]
       );
     } catch (e) { console.warn('AI log failed:', e); }
   },
@@ -116,7 +116,7 @@ const Scraper = {
 
       Gemini.logAI(
         'gemini_scrape',
-        data.model || 'gemini-2.0-flash',
+        data.model || 'gemini-3.8-flash',
         customerName,
         'success',
         `${data.evidence.length} evidence, mode: ${data.mode || 'unknown'}`,

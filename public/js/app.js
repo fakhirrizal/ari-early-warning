@@ -158,7 +158,7 @@ const App = {
       <div class="box info">
         <div class="ai-pulse" style="margin-bottom:8px">Gemini AI is working</div>
         <p style="margin:4px 0"><strong>Customer:</strong> ${this.esc(cust.name)}</p>
-        <p style="margin:4px 0"><strong>Model:</strong> gemini-2.0-flash</p>
+        <p style="margin:4px 0"><strong>Model:</strong> gemini-3.8-flash</p>
         <p class="muted" style="margin-top:8px">Searching public info: SIPP, IDX, operational news...</p>
       </div>`;
     this.toast('✦ Calling Gemini AI...', 'gemini');

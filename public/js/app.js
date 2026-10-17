@@ -194,7 +194,7 @@ const App = {
     if (act) act.innerHTML = `
       <div class="box ok">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <span class="badge gemini">✦ Gemini Success</span>
+          <span class="badge gemini">Gemini Success</span>
           <span class="muted">${res.duration}ms · mode: ${res.mode || 'analysis'}</span>
         </div>
         <p style="margin:4px 0"><strong>${res.total} evidence</strong> found for <strong>${this.esc(cust.name)}</strong>.</p>

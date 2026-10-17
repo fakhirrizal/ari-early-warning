@@ -35,7 +35,10 @@ async function handleGemini(request, env) {
   const apiKey = env.GEMINI_API_KEY;
   if (!apiKey) return json({ error: 'GEMINI_API_KEY not configured' }, 500);
 
-  const model = 'gemini-3.8-flash';
+  // Ensure the model name is correct. If gemini-3.8-flash throws an error, 
+  // change this to 'gemini-1.5-flash' or 'gemini-2.0-flash'
+  const model = 'gemini-3.8-flash'; 
+  
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: { temperature, maxOutputTokens: 1024 },
@@ -98,30 +101,30 @@ async function handleGeminiScrape(request, env) {
 }
 
 async function geminiWithSearch(customerName, apiKey, model) {
-  const prompt = `Anda adalah analis risiko untuk perusahaan rental truk di Indonesia.
+  const prompt = `You are a risk analyst for a truck rental company in Indonesia.
 
-Cari informasi publik TERKINI tentang perusahaan bernama "${customerName}" terkait:
-1. Status hukum: PKPU, pailit, gugatan, atau perkara pengadilan (sumber: SIPP, direktori MA)
-2. Kondisi keuangan: kesulitan likuiditas, laporan keuangan, pengungkapan IDX
-3. Gangguan operasional: perubahan jadwal, disruption, pengumuman resmi perusahaan
-4. Kondisi industri: perlambatan sektor transportasi/logistik
+Search for RECENT public information about the company named "${customerName}" regarding:
+1. Legal status: bankruptcy (PKPU), lawsuits, or court proceedings (source: SIPP, Supreme Court directory)
+2. Financial condition: liquidity issues, financial reports, IDX disclosures
+3. Operational disruptions: schedule changes, disruptions, official company announcements
+4. Industry conditions: slowdown in the transportation/logistics sector
 
-Format output sebagai JSON array SAJA (tanpa markdown fence), dengan struktur:
+Format the output as a JSON array ONLY (no markdown fences), with the following structure:
 [
   {
-    "event": "Judul singkat kejadian",
+    "event": "Short title of the event (in English)",
     "category": "LEGAL|FINANCIAL|OPERATIONAL|INDUSTRY",
     "severity": "Low|Medium|High",
-    "summary": "Ringkasan 1-2 kalimat",
-    "source_url": "URL sumber jika ada",
+    "summary": "1-2 sentence summary (in English)",
+    "source_url": "URL of the source if available",
     "confidence": 0.0-1.0,
     "published_date": "YYYY-MM-DD",
     "score": [L, F, O, I]
   }
 ]
-Di mana score[0..3] adalah skor 0-100 untuk faktor Legal, Financial, Operational, Industry.
+Where score[0..3] is a score from 0-100 for Legal, Financial, Operational, and Industry factors.
 
-Jika tidak ada informasi relevan yang dapat diverifikasi, kembalikan array kosong [].`;
+If there is no relevant verifiable information, return an empty array [].`;
 
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
@@ -148,29 +151,29 @@ Jika tidak ada informasi relevan yang dapat diverifikasi, kembalikan array koson
 }
 
 async function geminiAnalysis(customerName, apiKey, model) {
-  const prompt = `Anda adalah analis risiko untuk perusahaan rental truk di Indonesia.
+  const prompt = `You are a risk analyst for a truck rental company in Indonesia.
 
-Berdasarkan pengetahuan Anda tentang perusahaan bernama "${customerName}", klasifikasikan risiko eksternal terkait 4 kategori:
-- LEGAL: status PKPU/pailit/gugatan
-- FINANCIAL: tekanan likuiditas / kesulitan keuangan
-- OPERATIONAL: gangguan operasional
-- INDUSTRY: kondisi industri transportasi/logistik
+Based on your knowledge of the company named "${customerName}", classify external risks across 4 categories:
+- LEGAL: bankruptcy (PKPU), lawsuits
+- FINANCIAL: liquidity pressure / financial distress
+- OPERATIONAL: operational disruptions
+- INDUSTRY: transportation/logistics industry conditions
 
-Kembalikan JSON array SAJA (tanpa markdown fence) dengan 1-3 evidence yang paling relevan:
+Return a JSON array ONLY (no markdown fences) with the 1-3 most relevant evidence items:
 [
   {
-    "event": "Deskripsi singkat",
+    "event": "Short description (in English)",
     "category": "LEGAL|FINANCIAL|OPERATIONAL|INDUSTRY",
     "severity": "Low|Medium|High",
-    "summary": "Penjelasan 1-2 kalimat. Sebutkan bahwa ini adalah analisis AI berbasis nama perusahaan.",
-    "source_url": "https://... (referensi umum)",
+    "summary": "1-2 sentence explanation (in English). Mention that this is an AI analysis based on the company name.",
+    "source_url": "https://... (general reference)",
     "confidence": 0.0-1.0,
     "published_date": "${new Date().toISOString().slice(0,10)}",
     "score": [L, F, O, I]
   }
 ]
 
-Jika tidak cukup informasi untuk menilai, kembalikan array dengan 1 evidence berkategori "INDUSTRY" severity "Low" confidence 0.5 dengan summary bahwa data tidak cukup dan perlu verifikasi manual.`;
+If there is not enough information to assess, return an array with 1 evidence item categorized as "INDUSTRY" severity "Low" confidence 0.5, with a summary stating that data is insufficient and requires manual verification.`;
 
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],

@@ -27,7 +27,7 @@ const App = {
       this.loadRiskInputs();
       this.renderAll();
       
-      // 🛠️ FIX: Render charts explicitly on initial load
+      // Render charts explicitly on initial load
       this.renderCharts(); 
       
     } catch (err) {
@@ -43,7 +43,6 @@ const App = {
   },
 
   populateDropdowns() {
-    // 🛠️ FIX: Select all to ensure no customers are missing from the dropdown
     const custs = ARIDB.query('SELECT * FROM customers');
     ['riskCustomer', 'mgrCustomer', 'scrapeCustSelect'].forEach(id => {
       const el = document.getElementById(id);
@@ -98,16 +97,15 @@ const App = {
     document.getElementById('explainBtn')?.addEventListener('click', () => this.explainRisk());
     document.getElementById('saveActionBtn')?.addEventListener('click', () => this.saveAction());
     document.getElementById('saveReviewBtn')?.addEventListener('click', () => this.saveReview());
-    document.getElementById('saveWorkerBtn')?.addEventListener('click', () => this.saveWorker());
     document.getElementById('scrapeBtn')?.addEventListener('click', () => this.runScrape());
+    
+    // Only bind to header buttons now
     document.getElementById('seedBtn')?.addEventListener('click', () => this.runBulkSeed());
-    document.getElementById('seedBtn2')?.addEventListener('click', () => this.runBulkSeed());
 
     const handleReset = () => {
       if (confirm('Reset all data to initial seed?')) ARIDB.reset();
     };
     document.getElementById('resetBtn')?.addEventListener('click', handleReset);
-    document.getElementById('resetBtn2')?.addEventListener('click', handleReset);
 
     document.getElementById('modalClose')?.addEventListener('click', () => this.closeModal());
     document.getElementById('modal')?.addEventListener('click', e => {
@@ -118,38 +116,20 @@ const App = {
 
   async runBulkSeed() {
     if (!confirm('Generate ~1000 customers + alerts + evidence?\n\nExisting data will be overwritten. Process ~3 seconds.')) return;
-    const msg = document.getElementById('seedMsg');
-    if (msg) msg.innerHTML = '<div class="box info">⚡ Generating 1000 records...</div>';
+    
     this.toast('⚡ Generating 1000 records...', 'gemini');
 
     setTimeout(() => {
       try {
         const stats = ARIDB.seedBulk((pct, txt) => {
-          if (msg) msg.innerHTML = `<div class="box info">⚡ ${txt || 'Processing...'}</div>`;
+          // Progress hidden in header, no UI element to update
         });
         this.toast(`✓ Seeded ${stats.customers} customers, ${stats.alerts} alerts, ${stats.evidence} evidence`, 'success');
-        if (msg) msg.innerHTML = `<div class="box ok">✓ Success: <strong>${stats.customers}</strong> customers, <strong>${stats.alerts}</strong> alerts, <strong>${stats.evidence}</strong> evidence. Refreshing...</div>`;
         setTimeout(() => location.reload(), 1500);
       } catch (e) {
         this.toast('✗ Seed failed: ' + e.message, 'error');
-        if (msg) msg.innerHTML = `<div class="box warn">Error: ${this.esc(e.message)}</div>`;
       }
     }, 100);
-  },
-
-  async saveWorker() {
-    const url = document.getElementById('workerUrlInput').value.trim();
-    if (!url) return;
-    ARIGemini.setUrl(url);
-    const st = document.getElementById('workerStatus');
-    st.innerHTML = '<div class="box info">Testing connection...</div>';
-    const res = await ARIGemini.healthCheck();
-    if (res.ok) {
-      st.innerHTML = '<div class="box ok">✓ Worker connected. Gemini AI active.</div>';
-      this.toast('✦ Gemini AI connected', 'gemini');
-    } else {
-      st.innerHTML = `<div class="box warn">Failed: ${this.esc(res.error || 'Unknown')}</div>`;
-    }
   },
 
   async runScrape() {
@@ -296,7 +276,7 @@ const App = {
         return [
           `<strong>${this.esc(c.name)}</strong>`,
           c.contract,
-          this.fmtIDRShort(c.exposure), // 🛠️ FIX: Use short format
+          this.fmtIDRShort(c.exposure),
           c.rate + '%',
           r.value ?? 'N/A',
           this.badge(r.level),
@@ -315,7 +295,7 @@ const App = {
         return [
           this.esc(c.name), c.contract,
           c.rate + '%', c.delay ?? 'N/A', c.growth + '%',
-          this.fmtIDRShort(c.exposure), // 🛠️ FIX: Use short format
+          this.fmtIDRShort(c.exposure),
           this.badge(r.level),
           `<button class="btn sm tonal" data-view-cust="${c.id}">View</button>`,
         ];
@@ -323,7 +303,6 @@ const App = {
       { pageLength: 25, order: [[0, 'asc']] }
     );
     
-    // Event Delegation for Customer Table
     const wrapper = document.getElementById('customerTable');
     if (wrapper) {
       wrapper.onclick = (e) => {
@@ -527,7 +506,10 @@ const App = {
         const status = !e.verified ? 'Unverified' : e.match_status !== 'Matched' ? 'Manual' : 'Verified';
         const prov = e.ai_provider === 'gemini' ? '<span class="badge gemini">Gemini</span>' : '<span class="muted">Seed</span>';
         return [
-          e.id, this.esc(c?.name || ''), this.esc(e.event), e.category,
+          e.id, 
+          this.esc(c?.name || ''), 
+          `<div style="white-space:normal;min-width:250px;max-width:400px;">${this.esc(e.event)}</div>`, // FIX: Event wrap
+          e.category,
           this.badge(sevB),
           sc === 'N/A' ? '<span class="muted">N/A</span>' : `<strong>${sc}</strong>`,
           this.esc(status), prov,
@@ -807,13 +789,9 @@ const App = {
       const acount = ARIDB.query('SELECT COUNT(*) c FROM alerts')[0].c;
       const ecount = ARIDB.query('SELECT COUNT(*) c FROM evidence')[0].c;
       const gcount = ARIDB.query("SELECT COUNT(*) c FROM evidence WHERE ai_provider='gemini'")[0].c;
-      const workerUrl = ARIGemini.getUrl();
       document.getElementById('dbStatus').innerHTML = `
         <span class="badge Green">Active</span> · localStorage persistence<br>
-        <p style="margin:8px 0"><strong>${count.toLocaleString('en-US')}</strong> customers · <strong>${acount.toLocaleString('en-US')}</strong> alerts · <strong>${ecount.toLocaleString('en-US')}</strong> evidence · <strong>${gcount.toLocaleString('en-US')}</strong> Gemini-sourced</p>
-        <p style="margin:8px 0" class="muted">Worker: <code>${this.esc(workerUrl || 'Not configured')}</code></p>`;
-      const wi = document.getElementById('workerUrlInput');
-      if (wi && !wi.value) wi.value = workerUrl || '';
+        <p style="margin:8px 0"><strong>${count.toLocaleString('en-US')}</strong> customers · <strong>${acount.toLocaleString('en-US')}</strong> alerts · <strong>${ecount.toLocaleString('en-US')}</strong> evidence · <strong>${gcount.toLocaleString('en-US')}</strong> Gemini-sourced</p>`;
     } catch (e) {
       document.getElementById('dbStatus').innerHTML = '<span class="badge Red">Error</span>';
     }

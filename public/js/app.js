@@ -317,9 +317,15 @@ const App = {
       }),
       { pageLength: 25, order: [[0, 'asc']] }
     );
-    document.querySelectorAll('[data-view-cust]').forEach(b => {
-      b.addEventListener('click', () => this.showCustomer(b.dataset.viewCust));
-    });
+    
+    // 🛠️ FIX: Event Delegation for Customer Table
+    const wrapper = document.getElementById('customerTable');
+    if (wrapper) {
+      wrapper.onclick = (e) => {
+        const btn = e.target.closest('[data-view-cust]');
+        if (btn) this.showCustomer(btn.dataset.viewCust);
+      };
+    }
   },
 
   showCustomer(id) {
@@ -525,9 +531,16 @@ const App = {
       }),
       { pageLength: 25, order: [[0, 'desc']] }
     );
-    document.querySelectorAll('[data-view-ev]').forEach(b => {
-      b.addEventListener('click', () => this.showEvidence(b.dataset.viewEv));
-    });
+    
+    // 🛠️ FIX: Event Delegation for Evidence Table
+    const wrapper = document.getElementById('evidenceTable');
+    if (wrapper) {
+      wrapper.onclick = (e) => {
+        const btn = e.target.closest('[data-view-ev]');
+        if (btn) this.showEvidence(btn.dataset.viewEv);
+      };
+    }
+    
     this.showEvidence(this.selectedEvidenceId);
   },
 
@@ -589,9 +602,15 @@ const App = {
       }),
       { pageLength: 25, order: [[0, 'desc']] }
     );
-    document.querySelectorAll('[data-view-alert]').forEach(b => {
-      b.addEventListener('click', () => this.showAlert(b.dataset.viewAlert));
-    });
+    
+    // 🛠️ FIX: Event Delegation for Alert Table
+    const wrapper = document.getElementById('alertTable');
+    if (wrapper) {
+      wrapper.onclick = (e) => {
+        const btn = e.target.closest('[data-view-alert]');
+        if (btn) this.showAlert(btn.dataset.viewAlert);
+      };
+    }
   },
 
   showAlert(id) {

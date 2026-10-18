@@ -26,6 +26,10 @@ const App = {
       this.populateDropdowns();
       this.loadRiskInputs();
       this.renderAll();
+      
+      // 🛠️ FIX: Render charts explicitly on initial load
+      this.renderCharts(); 
+      
     } catch (err) {
       console.error('Init error:', err);
       const t = document.getElementById('loadText');
@@ -39,7 +43,8 @@ const App = {
   },
 
   populateDropdowns() {
-    const custs = ARIDB.query('SELECT * FROM customers LIMIT 1000');
+    // 🛠️ FIX: Select all to ensure no customers are missing from the dropdown
+    const custs = ARIDB.query('SELECT * FROM customers');
     ['riskCustomer', 'mgrCustomer', 'scrapeCustSelect'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = custs.map(c => `<option value="${c.id}">${this.esc(c.name)}</option>`).join('');
@@ -291,7 +296,7 @@ const App = {
         return [
           `<strong>${this.esc(c.name)}</strong>`,
           c.contract,
-          this.fmtIDR(c.exposure),
+          this.fmtIDRShort(c.exposure), // 🛠️ FIX: Use short format
           c.rate + '%',
           r.value ?? 'N/A',
           this.badge(r.level),
@@ -310,7 +315,7 @@ const App = {
         return [
           this.esc(c.name), c.contract,
           c.rate + '%', c.delay ?? 'N/A', c.growth + '%',
-          this.fmtIDR(c.exposure),
+          this.fmtIDRShort(c.exposure), // 🛠️ FIX: Use short format
           this.badge(r.level),
           `<button class="btn sm tonal" data-view-cust="${c.id}">View</button>`,
         ];
@@ -318,7 +323,7 @@ const App = {
       { pageLength: 25, order: [[0, 'asc']] }
     );
     
-    // 🛠️ FIX: Event Delegation for Customer Table
+    // Event Delegation for Customer Table
     const wrapper = document.getElementById('customerTable');
     if (wrapper) {
       wrapper.onclick = (e) => {
@@ -532,7 +537,6 @@ const App = {
       { pageLength: 25, order: [[0, 'desc']] }
     );
     
-    // 🛠️ FIX: Event Delegation for Evidence Table
     const wrapper = document.getElementById('evidenceTable');
     if (wrapper) {
       wrapper.onclick = (e) => {
@@ -603,7 +607,6 @@ const App = {
       { pageLength: 25, order: [[0, 'desc']] }
     );
     
-    // 🛠️ FIX: Event Delegation for Alert Table
     const wrapper = document.getElementById('alertTable');
     if (wrapper) {
       wrapper.onclick = (e) => {
@@ -1039,11 +1042,11 @@ const App = {
 
   fmtIDRShort(n) {
     const v = Number(n);
-    if (v >= 1e12) return (v/1e12).toFixed(1) + ' T';
-    if (v >= 1e9)  return (v/1e9).toFixed(1) + ' B';
-    if (v >= 1e6)  return Math.round(v/1e6) + ' M';
-    if (v >= 1e3)  return Math.round(v/1e3) + ' K';
-    return String(v);
+    if (v >= 1e12) return 'IDR ' + (v/1e12).toFixed(1) + ' T';
+    if (v >= 1e9)  return 'IDR ' + (v/1e9).toFixed(1) + ' B';
+    if (v >= 1e6)  return 'IDR ' + Math.round(v/1e6) + ' M';
+    if (v >= 1e3)  return 'IDR ' + Math.round(v/1e3) + ' K';
+    return 'IDR ' + String(v);
   },
 };
 

@@ -117,8 +117,9 @@
     /* DataTables */
     .table-wrap{overflow-x:auto;margin-top:12px}
     table.dataTable{font-size:13px;border-collapse:collapse!important;width:100%!important}
-    table.dataTable thead th{background:var(--surf-container);color:var(--on-surf-var);font-weight:500;font-size:12px;letter-spacing:.02em;border-bottom:1px solid var(--outline-var)!important;padding:12px}
-    table.dataTable tbody td{padding:12px;border-bottom:1px solid var(--outline-var)!important;color:var(--on-surf)}
+    table.dataTable thead th{background:var(--surf-container);color:var(--on-surf-var);font-weight:500;font-size:12px;letter-spacing:.02em;border-bottom:1px solid var(--outline-var)!important;padding:12px;white-space:nowrap}
+    /* 🛠️ FIX: white-space: nowrap to prevent text wrapping */
+    table.dataTable tbody td{padding:12px;border-bottom:1px solid var(--outline-var)!important;color:var(--on-surf);white-space:nowrap}
     table.dataTable tbody tr:hover td{background:var(--surf-container-hi)}
     .dt-container{width:100%!important}
     .dt-container .dt-search input,.dt-container .dt-length select{border:1px solid var(--outline-var);border-radius:var(--r-sm);padding:8px 12px;font-size:13px;background:var(--surf)}
@@ -355,9 +356,12 @@
             If Google Search grounding is available, Gemini performs real-time search from verified sources.
         </div>
         <div class="actions" style="margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-            <select id="scrapeCustSelect" class="select2-dropdown" style="width:300px;"></select>
-            <button class="btn seed" id="scrapeBtn">✦ Fetch via Gemini AI</button>
-            <span class="muted" id="scrapeStatus"></span>
+            <div style="flex:1;min-width:250px">
+                <label for="scrapeCustSelect" style="margin-bottom:4px">Search from 1,000+ monitored customers</label>
+                <select id="scrapeCustSelect" class="select2-dropdown" style="width:100%;margin-bottom:0"></select>
+            </div>
+            <button class="btn seed" id="scrapeBtn" style="margin-top:20px">✦ Fetch via Gemini AI</button>
+            <span class="muted" id="scrapeStatus" style="margin-top:20px"></span>
         </div>
         <div id="aiActivityBox"></div>
         <div class="metrics" id="mExternal"></div>

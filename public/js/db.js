@@ -2,7 +2,6 @@
  * ARI - Database + KPI + Risk Engine
  */
 
-// Extracted from the provided Excel file (1000 names)
 const COMPANY_NAMES = [
   "PT Abadi Nusantara Hijau Investam", "PT Adhi Kartiko Pratama Tbk", "PT Agro Yasa Lestari Tbk", "PT Alakasa Industrindo Tbk", "PT Alkindo Naratama Tbk",
   "PT Alumindo Light Metal Industry", "PT Amman Mineral Internasional Tb", "PT Ancora Indonesia Resources Tbk", "PT Aneka Tambang Tbk", "PT Archi Indonesia Tbk",
